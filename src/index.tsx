@@ -7,22 +7,27 @@ export const app = new OpenAPIHono();
 
 const ParamsSchema = z.object({
   id: z
-    .string()
+    .number()
     .min(3)
     .openapi({
       param: {
         name: 'id',
         in: 'path',
       },
-      example: '1212121',
+      example: 1212121,
     }),
 });
 
 const UserSchema = z
   .object({
-    id: z.string().openapi({
-      example: '123',
+    id: z.number().openapi({
+      example: 123,
     }),
+  })
+  .openapi('User');
+
+const Body = z
+  .object({
     name: z.string().openapi({
       example: 'John Doe',
     }),
@@ -30,7 +35,7 @@ const UserSchema = z
       example: 42,
     }),
   })
-  .openapi('User');
+  .openapi('Body');
 
 app.openapi(
   createRoute({
@@ -55,6 +60,45 @@ app.openapi(
     const { id } = c.req.valid('param')
     return c.json({
       id,
+      age: 20,
+      name: 'Ultra-man',
+    })
+  });
+
+
+app.openapi(
+  createRoute({
+    method: 'patch',
+    path: '/users/{id}',
+    request: {
+      params: ParamsSchema,
+      body: {
+        content: {
+          'application/json': {
+            schema: Body,
+          },
+        },
+      }
+    },
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: UserSchema,
+          },
+        },
+        description: 'Retrieve the user',
+      },
+    },
+  }),
+  async (c) => {
+    await new Promise(res => setTimeout(() => res(void 0), 1000));
+    const { name, age } = c.req.valid('json');
+    // 又は const { name } = await c.req.parseBody();
+    const { id } = c.req.valid('param');
+
+    return c.json({
+      id: 1,
       age: 20,
       name: 'Ultra-man',
     })
