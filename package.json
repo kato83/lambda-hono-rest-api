@@ -1,0 +1,25 @@
+{
+  "name": "lambda-hono-rest-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist/* && node ./lib/build.js && cd ./dist && zip -r hono.zip ./"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@hono/node-server": "^1.14.4",
+    "@tsconfig/recommended": "^1.0.10",
+    "esbuild": "^0.25.5",
+    "glob": "^11.0.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^0.19.8",
+    "hono": "^4.8.3",
+    "zod": "^3.25.67"
+  }
+}
