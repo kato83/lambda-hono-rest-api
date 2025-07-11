@@ -7,6 +7,8 @@ export const app = new OpenAPIHono();
 
 const ParamsSchema = z.object({
   id: z
+    // パスパラメータ&数値型で受け取りたいならZodライブラリの型強制（coercion）機能を使う
+    .coerce
     .number()
     .min(3)
     .openapi({
@@ -41,6 +43,7 @@ app.openapi(
   createRoute({
     method: 'get',
     path: '/users/{id}',
+    security: [{ apiKey: [] }],
     request: {
       params: ParamsSchema,
     },
@@ -70,6 +73,7 @@ app.openapi(
   createRoute({
     method: 'patch',
     path: '/users/{id}',
+    security: [{ apiKey: [] }],
     request: {
       params: ParamsSchema,
       body: {
@@ -93,9 +97,9 @@ app.openapi(
   }),
   async (c) => {
     await new Promise(res => setTimeout(() => res(void 0), 1000));
-    const { name, age } = c.req.valid('json');
+    const { name: _name, age: _age } = c.req.valid('json');
     // 又は const { name } = await c.req.parseBody();
-    const { id } = c.req.valid('param');
+    const { id: _id } = c.req.valid('param');
 
     return c.json({
       id: 1,
@@ -103,6 +107,13 @@ app.openapi(
       name: 'Ultra-man',
     })
   });
+
+app.openAPIRegistry.registerComponent('securitySchemes', 'apiKey', {
+  scheme: 'apiKey',
+  type: 'apiKey',
+  in: 'header',
+  name: 'X-API-Key',
+});
 
 // The OpenAPI documentation will be available at /doc
 app.doc('/doc', {
